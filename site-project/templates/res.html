@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekday Fullwidth Boxes</title>
+
+<style>
+/* Box sizing */
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
+/* Animated gradient background */
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: monospace, serif;
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(52,9,121,1) 37%, rgba(0,212,255,1) 94%);
+  background-size: 400% 400%;
+  animation: gradientBG 10s ease infinite;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Container for vertical day boxes */
+.days-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  flex: 1;
+}
+
+/* Individual day boxes (full width) */
+.day-box {
+  flex: 1; /* هر باکس ارتفاع مساوی میگیره */
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  margin: 0;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  text-align: right; /* متن سمت راست */
+  font-size: 2rem;
+  display: flex;
+  align-items: center; /* متن وسط عمودی */
+  transition: transform 0.3s ease;
+}
+
+.day-box:hover {
+  transform: scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .day-box {
+    font-size: 1.5rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .day-box {
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="days-container">
+    <div class="day-box">Sat</div>
+    <div class="day-box">Sun</div>
+    <div class="day-box">Mon</div>
+    <div class="day-box">Tue</div>
+    <div class="day-box">Wed</div>
+    <div class="day-box">Thu</div>
+    <div class="day-box">Fri</div>
+  </div>
+</body>
+</html>

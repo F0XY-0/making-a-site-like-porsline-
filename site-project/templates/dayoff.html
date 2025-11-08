@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>انتخاب روز مرخصی</title>
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(52,9,121,1) 37%, rgba(0,212,255,1) 94%);
+  background-size: 400% 400%;
+  animation: bgmove 15s ease infinite;
+  font-family: "Vazir", sans-serif;
+  color: #fff;
+  direction: rtl;
+}
+
+@keyframes bgmove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Container in vertical layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 90%;
+  max-width: 400px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 22px;
+}
+
+/* Day box */
+.day {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.day:hover {
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.day.selected {
+  background: linear-gradient(135deg, #ff8a00, #e52e71);
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.6);
+}
+</style>
+</head>
+<body>
+
+<div>
+  <h1>روز مرخصی خود را انتخاب کنید</h1>
+  <div class="container">
+    <div class="day">شنبه</div>
+    <div class="day">یکشنبه</div>
+    <div class="day">دوشنبه</div>
+    <div class="day">سه‌شنبه</div>
+    <div class="day">چهارشنبه</div>
+    <div class="day">پنج‌شنبه</div>
+    <div class="day">جمعه</div>
+  </div>
+</div>
+
+<script>
+const days = document.querySelectorAll(".day");
+
+days.forEach(day => {
+  day.addEventListener("click", () => {
+    days.forEach(d => d.classList.remove("selected"));
+    day.classList.add("selected");
+    console.log("Selected day:", day.textContent);
+  });
+});
+</script>
+
+</body>
+</html>
