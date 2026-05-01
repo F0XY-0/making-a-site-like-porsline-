@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Leave App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="login-container">
+        <h1>Employee Login</h1>
+        
+        
+        <form class="form" onsubmit="login(event)">
+            <div class="control">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="control">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <div id="message" class="error"></div>  
+        </form>
+    </main>
+    <script src="brain.js"></script>
+</body>
+</html>
