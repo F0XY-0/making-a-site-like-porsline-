@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت | سیستم مرخصی</title>
+    
+    <style>
+        /* ========== استایل اصلی ========== */
+        *,
+        *::after,
+        *::before {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, rgba(2, 0, 36, 1) 0%, rgba(52, 9, 121, 1) 37%, rgb(0, 0, 0) 100%);
+            background-size: 400% 400%;
+            animation: bgmove 15s ease infinite;
+            color: #fff;
+        }
+
+        @keyframes bgmove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* پنل ادمین */
+        .admin-panel {
+            width: 95%;
+            max-width: 1400px;
+            margin: 1rem auto;
+            padding: 1rem;
+        }
+
+        /* هدر */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .admin-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .admin-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* کارت‌های آمار */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            margin: 0 0 0.5rem 0;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* بخش اصلی دو ستونه */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .requests-section,
+        .employees-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.2rem;
+        }
+
+        /* دکمه‌ها */
+        .refresh-btn,
+        .add-btn,
+        .logout-btn {
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover,
+        .add-btn:hover,
+        .logout-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #e52e71, #ff8a00);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* جدول درخواست‌ها */
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .requests-table th,
+        .requests-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .requests-table th {
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+        }
+
+        /* وضعیت‌ها */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .status-pending {
+            background: #ff8a00;
+            color: #fff;
+        }
+
+        .status-approved {
+            background: #00d4ff;
+            color: #000;
+        }
+
+        /* دکمه‌های عملیات */
+        .approve-btn {
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 2px;
+            font-weight: bold;
+        }
+
+        .reject-btn {
+            background: #e52e71;
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* لیست کارمندان */
+        .employees-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .employee-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .employee-name {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .employee-username {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .leave-progress {
+            margin-top: 8px;
+        }
+
+        .progress-bar-small {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            border-radius: 3px;
+        }
+
+        .leave-text {
+            font-size: 0.75rem;
+        }
+
+        .employee-actions button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 5px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 2px;
+            font-size: 1rem;
+        }
+
+        /* مدال افزودن کارمند */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2a0845, #6441a5);
+            padding: 2rem;
+            border-radius: 24px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .modal-content input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .close {
+            float: left;
+            font-size: 28px;
+            cursor: pointer;
+            color: white;
+        }
+
+        /* ========== استایل مودال سفارشی ========== */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .custom-modal {
+            background: linear-gradient(135deg, rgba(42, 8, 69, 0.95), rgba(100, 65, 165, 0.95));
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            width: 350px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .custom-modal-header {
+            padding: 20px 20px 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .custom-modal-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .custom-modal-header h3 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .custom-modal-body {
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .custom-modal-footer {
+            padding: 15px 20px 25px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .custom-modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-modal-btn.confirm {
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            color: white;
+        }
+
+        .custom-modal-btn.confirm:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #e52e71, #ff8a00);
+            box-shadow: 0 0 15px rgba(229, 46, 113, 0.5);
+        }
+
+        .custom-modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .custom-modal-btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-panel">
+        
+        <!-- هدر پنل ادمین -->
+        <header class="admin-header">
+            <div class="logo">
+                <h2>🎛️ پنل مدیریت مرخصی</h2>
+            </div>
+            <div class="admin-info">
+                <span class="admin-name" id="adminName">مدیر سیستم</span>
+                <button class="logout-btn" onclick="logout()">🚪 خروج</button>
+            </div>
+        </header>
+
+        <!-- بخش آمار و کارت‌ها -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>تعداد کارمندان</h3>
+                    <div class="stat-value" id="totalEmployees">--</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <h3>درخواست‌های امروز</h3>
+                    <div class="stat-value" id="todayRequests">--</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>مرخصی‌های تأیید شده</h3>
+                    <div class="stat-value" id="approvedLeaves">--</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-info">
+                    <h3>در انتظار تأیید</h3>
+                    <div class="stat-value" id="pendingRequests">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بخش اصلی: دو ستونه -->
+        <div class="main-content">
+            <!-- ستون راست: لیست درخواست‌های مرخصی -->
+            <div class="requests-section">
+                <div class="section-header">
+                    <h3>📋 آخرین درخواست‌های مرخصی</h3>
+                    <button class="refresh-btn" onclick="refreshData()">🔄</button>
+                </div>
+                <div class="requests-table-container">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>کارمند</th>
+                                <th>روز درخواستی</th>
+                                <th>تاریخ ثبت</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsList">
+                            <tr class="placeholder-row">
+                                <td colspan="5">در حال اتصال به سرور...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ستون چپ: لیست کارمندان -->
+            <div class="employees-section">
+                <div class="section-header">
+                    <h3>👨‍💻 لیست کارمندان</h3>
+                    <button class="add-btn" onclick="showAddEmployeeModal()">+ افزودن</button>
+                </div>
+                <div class="employees-list" id="employeesList">
+                    <div class="placeholder-text">در حال بارگیری...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- مدال افزودن کارمند -->
+        <div id="employeeModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>افزودن کارمند جدید</h3>
+                <form id="addEmployeeForm">
+                    <input type="text" placeholder="نام کامل" id="empName" required>
+                    <input type="text" placeholder="نام کاربری" id="empUsername" required>
+                    <input type="password" placeholder="رمز عبور" id="empPassword" required>
+                    <input type="number" placeholder="سقف مرخصی (روز)" id="empLeaveLimit" value="24">
+                    <button type="submit">ذخیره</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // سیستم مودال سفارشی (جایگزین alert)
+        // ============================================
+        
+        class CustomModal {
+            static currentOverlay = null;
+            
+            static show(options) {
+                const {
+                    title = 'پیام',
+                    message = '',
+                    icon = '📢',
+                    type = 'info',
+                    onConfirm = null,
+                    onCancel = null,
+                    showCancel = false,
+                    confirmText = 'تأیید',
+                    cancelText = 'انصراف',
+                    autoClose = 0
+                } = options;
+
+                this.hide();
+
+                const overlay = document.createElement('div');
+                overlay.className = 'custom-modal-overlay';
+
+                const modal = document.createElement('div');
+                modal.className = `custom-modal ${type}`;
+
+                modal.innerHTML = `
+                    <div class="custom-modal-header">
+                        <div class="custom-modal-icon">${icon}</div>
+                        <h3>${title}</h3>
+                    </div>
+                    <div class="custom-modal-body">
+                        <p>${message}</p>
+                    </div>
+                    <div class="custom-modal-footer">
+                        ${showCancel ? `<button class="custom-modal-btn cancel" id="modalCancelBtn">${cancelText}</button>` : ''}
+                        <button class="custom-modal-btn confirm" id="modalConfirmBtn">${confirmText}</button>
+                    </div>
+                `;
+
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                this.currentOverlay = overlay;
+
+                const confirmBtn = modal.querySelector('#modalConfirmBtn');
+                confirmBtn.addEventListener('click', () => {
+                    if (onConfirm) onConfirm();
+                    this.hide();
+                });
+
+                if (showCancel) {
+                    const cancelBtn = modal.querySelector('#modalCancelBtn');
+                    cancelBtn.addEventListener('click', () => {
+                        if (onCancel) onCancel();
+                        this.hide();
+                    });
+                }
+
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) this.hide();
+                });
+
+                if (autoClose > 0) {
+                    setTimeout(() => this.hide(), autoClose);
+                }
+            }
+
+            static hide() {
+                if (this.currentOverlay) {
+                    this.currentOverlay.remove();
+                    this.currentOverlay = null;
+                }
+            }
+
+            static success(message, title = 'موفقیت', autoClose = 2000) {
+                this.show({ title, message, icon: '✅', type: 'success', autoClose, confirmText: 'باشه' });
+            }
+
+            static error(message, title = 'خطا', autoClose = 3000) {
+                this.show({ title, message, icon: '❌', type: 'error', autoClose, confirmText: 'باشه' });
+            }
+
+            static warning(message, title = 'هشدار', onConfirm = null, showCancel = true) {
+                this.show({ title, message, icon: '⚠️', type: 'warning', showCancel, confirmText: 'بله', cancelText: 'انصراف', onConfirm });
+            }
+
+            static info(message, title = 'اطلاعیه', autoClose = 2000) {
+                this.show({ title, message, icon: 'ℹ️', type: 'info', autoClose, confirmText: 'باشه' });
+            }
+
+            static confirm(message, title = 'تأیید', onConfirm, onCancel = null) {
+                this.show({ title, message, icon: '❓', type: 'warning', showCancel: true, confirmText: 'تأیید', cancelText: 'انصراف', onConfirm, onCancel });
+            }
+        }
+
+        // ============================================
+        // دیتای Mock (شبیه‌سازی پاسخ سرور)
+        // ============================================
+
+        let mockData = {
+            employees: [
+                { id: 1, name: 'احمد رضایی', username: 'ahmad', leaveBalance: 18, totalLeaves: 24 },
+                { id: 2, name: 'سارا محمدی', username: 'sara', leaveBalance: 22, totalLeaves: 24 },
+                { id: 3, name: 'علی کریمی', username: 'ali', leaveBalance: 12, totalLeaves: 24 },
+                { id: 4, name: 'مریم حسینی', username: 'maryam', leaveBalance: 24, totalLeaves: 24 }
+            ],
+            leaveRequests: [
+                { id: 1, employeeName: 'احمد رضایی', day: 'شنبه', date: '1403/02/15', status: 'pending' },
+                { id: 2, employeeName: 'سارا محمدی', day: 'دوشنبه', date: '1403/02/14', status: 'approved' },
+                { id: 3, employeeName: 'علی کریمی', day: 'چهارشنبه', date: '1403/02/13', status: 'pending' },
+                { id: 4, employeeName: 'مریم حسینی', day: 'یکشنبه', date: '1403/02/12', status: 'approved' }
+            ]
+        };
+
+        // ============================================
+        // توابع اصلی
+        // ============================================
+
+        function loadStats() {
+            document.getElementById('totalEmployees').textContent = mockData.employees.length;
+            document.getElementById('todayRequests').textContent = mockData.leaveRequests.length;
+            document.getElementById('approvedLeaves').textContent = mockData.leaveRequests.filter(r => r.status === 'approved').length;
+            document.getElementById('pendingRequests').textContent = mockData.leaveRequests.filter(r => r.status === 'pending').length;
+        }
+
+        function loadRequests() {
+            const tbody = document.getElementById('requestsList');
+            if (mockData.leaveRequests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">هیچ درخواستی وجود ندارد</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = mockData.leaveRequests.map(req => `
+                <tr>
+                    <td>${req.employeeName}</td>
+                    <td>${req.day}</td>
+                    <td>${req.date}</td>
+                    <td>
+                        <span class="status-badge status-${req.status}">
+                            ${req.status === 'pending' ? 'در انتظار' : req.status === 'approved' ? 'تأیید شده' : 'رد شده'}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        ${req.status === 'pending' ? `
+                            <button class="approve-btn" onclick="approveRequest(${req.id})">✓ تأیید</button>
+                            <button class="reject-btn" onclick="rejectRequest(${req.id})">✗ رد</button>
+                        ` : '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadEmployees() {
+            const container = document.getElementById('employeesList');
+            if (mockData.employees.length === 0) {
+                container.innerHTML = '<div class="placeholder-text">هیچ کارمندی ثبت نشده</div>';
+                return;
+            }
+
+            container.innerHTML = mockData.employees.map(emp => `
+                <div class="employee-item">
+                    <div class="employee-info">
+                        <div class="employee-name">${emp.name}</div>
+                        <div class="employee-username">@${emp.username}</div>
+                        <div class="leave-progress">
+                            <div class="progress-bar-small">
+                                <div class="progress-fill" style="width: ${(emp.leaveBalance / emp.totalLeaves) * 100}%"></div>
+                            </div>
+                            <span class="leave-text">${emp.leaveBalance} / ${emp.totalLeaves} روز</span>
+                        </div>
+                    </div>
+                    <div class="employee-actions">
+                        <button class="edit-employee" onclick="editEmployee(${emp.id})">✏️</button>
+                        <button class="delete-employee" onclick="deleteEmployee(${emp.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // عملیات با مودال سفارشی
+        // ============================================
+
+        function approveRequest(requestId) {
+            CustomModal.confirm(
+                'آیا از تأیید این درخواست مطمئن هستید؟',
+                'تأیید درخواست',
+                () => {
+                    console.log(`✅ تأیید درخواست ${requestId}`);
+                    CustomModal.success(`درخواست با موفقیت تأیید شد`, 'موفقیت', 2000);
+                }
+            );
+        }
+
+        function rejectRequest(requestId) {
+            CustomModal.confirm(
+                'آیا از رد این درخواست مطمئن هستید؟',
+                'رد درخواست',
+                () => {
+                    console.log(`❌ رد درخواست ${requestId}`);
+                    CustomModal.warning(`درخواست مورد نظر رد شد`, 'رد درخواست', null, false);
+                }
+            );
+        }
+
+        function editEmployee(empId) {
+            CustomModal.info(`در حال ویرایش کارمند (این قابلیت به زودی اضافه می‌شود)`, 'ویرایش', 2000);
+        }
+
+        function deleteEmployee(empId) {
+            CustomModal.confirm(
+                'آیا از حذف این کارمند مطمئن هستید؟',
+                'حذف کارمند',
+                () => {
+                    mockData.employees = mockData.employees.filter(e => e.id !== empId);
+                    loadEmployees();
+                    loadStats();
+                    CustomModal.success('کارمند با موفقیت حذف شد', 'حذف شد', 1500);
+                }
+            );
+        }
+
+        function showAddEmployeeModal() {
+            document.getElementById('employeeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('employeeModal').style.display = 'none';
+        }
+
+        function refreshData() {
+            CustomModal.info('در حال بروزرسانی اطلاعات...', 'بارگذاری', 1000);
+            setTimeout(() => {
+                loadStats();
+                loadRequests();
+                loadEmployees();
+                CustomModal.success('اطلاعات با موفقیت بروزرسانی شد', 'انجام شد', 1500);
+            }, 500);
+        }
+
+        function logout() {
+            CustomModal.confirm(
+                'آیا از خروج از سیستم مطمئن هستید؟',
+                'خروج',
+                () => {
+                    localStorage.removeItem('adminLoggedIn');
+                    CustomModal.success('خروج موفق! در حال انتقال...', 'خروج', 1000);
+                    setTimeout(() => {
+                        window.location.href = 'skeletonlogin.html';
+                    }, 1000);
+                }
+            );
+        }
+
+        // اتصال فرم افزودن کارمند
+        document.getElementById('addEmployeeForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newEmp = {
+                id: mockData.employees.length + 1,
+                name: document.getElementById('empName').value,
+                username: document.getElementById('empUsername').value,
+                leaveBalance: parseInt(document.getElementById('empLeaveLimit').value),
+                totalLeaves: parseInt(document.getElementById('empLeaveLimit').value)
+            };
+            mockData.employees.push(newEmp);
+            closeModal();
+            loadEmployees();
+            loadStats();
+            document.getElementById('addEmployeeForm').reset();
+            CustomModal.success('کارمند جدید با موفقیت اضافه شد', 'افزودن کارمند', 2000);
+        });
+
+        // بارگذاری اولیه
+        loadStats();
+        loadRequests();
+        loadEmployees();
+
+        // نمایش پیام خوش‌آمدگویی
+        CustomModal.success('به پنل مدیریت خوش آمدید', 'سلام مدیر!', 2500);
+    </script>
+</body>
+</html>
